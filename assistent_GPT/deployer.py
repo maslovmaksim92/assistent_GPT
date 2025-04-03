@@ -54,3 +54,5 @@ def deploy():
 
     except Exception as e:
         print(f"[❌] Ошибка при деплое: {e}")
+def deploy_code():
+    deploy()
