@@ -1,0 +1,14 @@
+Flask==3.1.0
+gunicorn==21.2.0
+openai==1.70.0
+ffmpeg-python==0.2.0
+werkzeug>=3.1.0
+SQLAlchemy==2.0.37
+rapidfuzz==3.9.7
+fuzzywuzzy==0.18.0
+dateparser==1.1.8
+torch==2.4.1
+tqdm==4.67.1
+pydantic==2.10.6
+transformers==4.27.4
+python-dotenv==1.0.1
