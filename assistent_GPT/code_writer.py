@@ -1,4 +1,3 @@
-# code_writer.py
 import os
 import re
 from openai import OpenAI
@@ -10,7 +9,6 @@ client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 PROJECT_PATH = "./"
 
-
 def write_code(idea: str, full_context: str = None) -> bool:
     try:
         print("[🧠] Отправка запроса в OpenAI...")
@@ -21,7 +19,10 @@ def write_code(idea: str, full_context: str = None) -> bool:
         ]
 
         if full_context:
-            messages.append({"role": "user", "content": f"Вот текущий код проекта:\n{full_context}\n\nПредложи улучшения и верни файлы с новым кодом в формате: ```python FILE: filename.py\nновый код```"})
+            messages.append({
+                "role": "user",
+                "content": f"Вот текущий код проекта:\n{full_context}\n\nПредложи улучшения и верни файлы с новым кодом в формате: ```python FILE: filename.py\nновый код```"
+            })
 
         response = client.chat.completions.create(
             model="gpt-4",
@@ -58,3 +59,25 @@ def apply_code_updates(md_content: str):
             print(f"[✅] Обновлён файл: {filename}")
         except Exception as e:
             print(f"[❌] Не удалось обновить {filename}: {e}")
+
+
+# ✅ ДОБАВЛЕНО: минималистичная реализация для совместимости с wiki_task_updater
+def generate_code_from_task(task_description: str) -> str:
+    """
+    Генерация кода по описанию задачи (для использования в wiki_task_updater).
+    Возвращает сгенерированный код как строку.
+    """
+    try:
+        response = client.chat.completions.create(
+            model="gpt-4",
+            messages=[
+                {"role": "system", "content": "Ты — помощник-разработчик. Сгенерируй Python-код по задаче."},
+                {"role": "user", "content": f"Напиши Python-код для задачи:\n{task_description}"}
+            ],
+            temperature=0.5
+        )
+        return response.choices[0].message.content.strip()
+
+    except Exception as e:
+        print(f"[❌] Ошибка при генерации кода: {e}")
+        return f"# Ошибка генерации: {e}"

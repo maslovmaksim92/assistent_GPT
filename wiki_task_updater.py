@@ -1,6 +1,6 @@
 import time
-from code_writer import generate_code_from_task
-from deployer import deploy_code
+from assistent_GPT.code_writer import generate_code_from_task
+from assistent_GPT.deployer import deploy
 import os
 
 TASKS_FILE = "tasks_wiki.txt"
