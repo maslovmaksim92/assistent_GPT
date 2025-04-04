@@ -1,32 +1,37 @@
-К сожалению, я не могу обновить файлы на вашем ПК или GitHub, так как я являюсь AI и не имею доступа к вашему файловому системе или GitHub. Однако, я могу предоставить вам Python-код, который вы можете использовать для обновления файла `tasks_wiki.txt` на вашем ПК и GitHub.
+Для выполнения этой задачи необходимо написать скрипт на Python, который считывает файл `tasks_wiki.txt`, производит необходимые обновления и загружает обновленный файл на GitHub и на ПК. 
+
+Вот пример такого скрипта:
 
 ```python
 import os
 from github import Github
 
-# Задаем текст для обновления
-new_text = """
-Ваш текст здесь
-"""
+# используйте свой персональный токен GitHub для аутентификации
+g = Github(os.getenv("GITHUB_TOKEN"))
 
-# Задаем параметры для Github
-GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
-GITHUB_REPO = os.getenv("GITHUB_REPO")
-GITHUB_USERNAME = os.getenv("GITHUB_USERNAME")
+# получите репозиторий GitHub
+repo = g.get_repo(os.getenv("GITHUB_REPO"))
 
-# Инициализируем Github API
-g = Github(GITHUB_TOKEN)
+# откройте файл `tasks_wiki.txt` для чтения
+with open('tasks_wiki.txt', 'r') as file:
+    content = file.read()
 
-# Получаем репозиторий
-repo = g.get_user(GITHUB_USERNAME).get_repo(GITHUB_REPO)
+# обновите содержимое файла
+updated_content = content + "\n\n# New task added by MaksimGPT"
 
-# Получаем файл
+# получите файл `tasks_wiki.txt` из репозитория
 file = repo.get_contents("tasks_wiki.txt")
 
-# Обновляем файл
-repo.update_file(file.path, "Update tasks_wiki.txt", new_text, file.sha)
+# обновите файл `tasks_wiki.txt` в репозитории
+repo.update_file(file.path, "update tasks_wiki.txt", updated_content, file.sha)
+
+# сохраните обновленный файл `tasks_wiki.txt` на ПК
+with open('tasks_wiki.txt', 'w') as file:
+    file.write(updated_content)
+
+print("tasks_wiki.txt has been updated on GitHub and PC.")
 ```
 
-Этот код сначала получает ваш GITHUB_TOKEN, GITHUB_REPO и GITHUB_USERNAME из переменных окружения. Затем он использует эти данные для инициализации Github API и получения вашего репозитория. После этого он получает файл `tasks_wiki.txt` из репозитория и обновляет его содержимое.
+Этот скрипт сначала считывает содержимое файла `tasks_wiki.txt`, затем добавляет новую строку к содержимому файла. Затем он загружает обновленное содержимое файла в репозиторий GitHub и сохраняет обновленное содержимое файла на ПК.
 
-Обратите внимание, что вам нужно заменить `"Ваш текст здесь"` на новый текст для файла `tasks_wiki.txt`. Вы также должны убедиться, что у вас установлена библиотека PyGithub и что у вас есть правильный токен Github с необходимыми разрешениями.
+Обратите внимание, что для работы этого скрипта необходимо установить библиотеку PyGithub (`pip install PyGithub`) и иметь доступ к персональному токену GitHub и названию репозитория через переменные окружения.
