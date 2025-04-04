@@ -1,64 +1,35 @@
-Ваш запрос требует несколько шагов для выполнения. Ваш код будет сначала читать файл `tasks_wiki.txt`, анализировать его содержимое, генерировать новые задачи на основе содержимого и добавлять их в конец файла. Затем он будет обновлять `tasks_wiki.txt` на GitHub и на вашем компьютере. 
-
-Для начала, давайте напишем код для чтения файла и генерирования новых задач. Предположим, что у нас есть функция `generate_task()`, которая генерирует новую задачу.
+К сожалению, я не могу напрямую обновить файлы на вашем компьютере или на GitHub, так как я работаю в контексте текстового чата и не имею доступа к вашим файлам. Однако, я могу предложить Python-код, который вы можете использовать для обновления файла `tasks_wiki.txt` на вашем компьютере и на GitHub.
 
 ```python
-def read_and_generate_task():
-    with open('tasks_wiki.txt', 'r') as file:
-        content = file.readlines()
-
-    new_task = generate_task(content)  # предполагаемая функция
-    content.append(new_task)
-
-    with open('tasks_wiki.txt', 'w') as file:
-        file.writelines(content)
-```
-
-Теперь, чтобы обновить файл на GitHub, вам потребуется использовать GitHub API. Вы можете использовать библиотеку `pyGithub` для этого. Вам потребуется personal access token от вашего аккаунта GitHub.
-
-```python
+import os
 from github import Github
 
-def update_github_file():
-    g = Github("<your github token>")
-    repo = g.get_user().get_repo("<your repo name>")
-    file = repo.get_contents("tasks_wiki.txt")
-    repo.update_file("tasks_wiki.txt", "update tasks", "".join(content), file.sha)
+# Ваши переменные окружения
+GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
+GITHUB_REPO = os.getenv("GITHUB_REPO")
+GITHUB_USERNAME = os.getenv("GITHUB_USERNAME")
+
+# Создаем экземпляр Github с помощью токена
+g = Github(GITHUB_TOKEN)
+
+# Получаем репозиторий
+repo = g.get_repo(f"{GITHUB_USERNAME}/{GITHUB_REPO}")
+
+# Загружаем новую версию файла tasks_wiki.txt
+with open("tasks_wiki.txt", "r") as file:
+    content = file.read()
+    # Получаем файл из репозитория
+    git_file = repo.get_contents("tasks_wiki.txt", ref="main")
+    # Обновляем файл в репозитории
+    repo.update_file(git_file.path, "Update tasks_wiki.txt", content, git_file.sha, branch="main")
 ```
 
-Комбинируя это вместе, ваш код будет выглядеть примерно так:
+Этот код использует библиотеку PyGithub для взаимодействия с GitHub API. Вам нужно установить эту библиотеку, если она еще не установлена. Вы можете установить ее, используя pip:
 
-```python
-from github import Github
-
-def generate_task(content):
-    # ваш код для генерации новой задачи на основе содержимого
-    pass
-
-def read_and_generate_task():
-    with open('tasks_wiki.txt', 'r') as file:
-        content = file.readlines()
-
-    new_task = generate_task(content)
-    content.append(new_task)
-
-    with open('tasks_wiki.txt', 'w') as file:
-        file.writelines(content)
-
-    return content
-
-def update_github_file(content):
-    g = Github("<your github token>")
-    repo = g.get_user().get_repo("<your repo name>")
-    file = repo.get_contents("tasks_wiki.txt")
-    repo.update_file("tasks_wiki.txt", "update tasks", "".join(content), file.sha)
-
-def main():
-    content = read_and_generate_task()
-    update_github_file(content)
-
-if __name__ == "__main__":
-    main()
+```sh
+pip install PyGithub
 ```
 
-Обратите внимание, что вам нужно будет заменить `<your github token>` и `<your repo name>` на ваши собственные значения.
+Пожалуйста, обратите внимание, что этот код предполагает, что у вас есть переменные окружения GITHUB_TOKEN, GITHUB_REPO и GITHUB_USERNAME, которые содержат ваш GitHub токен, название репозитория и имя пользователя соответственно. 
+
+Если вы хотите просто обновить файл `tasks_wiki.txt` на вашем компьютере, вы можете просто скопировать и вставить обновленное содержимое в файл `tasks_wiki.txt` с помощью текстового редактора.
