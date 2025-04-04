@@ -1,7 +1,7 @@
 import time
-from assistent_GPT.code_writer import generate_code_from_task
-from assistent_GPT.deployer import deploy_code
 import os
+from assistent_GPT.code_writer import generate_code_from_task
+from assistent_GPT.deployer import deploy
 
 TASKS_FILE = "tasks_wiki.txt"
 OUTPUT_FILE = "generated_patch.py"
@@ -18,15 +18,21 @@ def read_task():
 
 
 def write_code_to_file(code: str):
-    with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
-        f.write(code)
-    print(f"[📦] Код сохранён в {OUTPUT_FILE}")
+    try:
+        with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
+            f.write(code)
+        print(f"[📦] Код сохранён в {OUTPUT_FILE}")
+    except Exception as e:
+        print(f"[❌] Ошибка сохранения кода: {e}")
 
 
 def append_log(entry: str):
-    os.makedirs("logs", exist_ok=True)
-    with open(LOG_FILE, "a", encoding="utf-8") as f:
-        f.write(entry + "\n")
+    try:
+        os.makedirs("logs", exist_ok=True)
+        with open(LOG_FILE, "a", encoding="utf-8") as f:
+            f.write(entry + "\n")
+    except Exception as e:
+        print(f"[❌] Ошибка записи лога: {e}")
 
 
 if __name__ == "__main__":
@@ -42,8 +48,8 @@ if __name__ == "__main__":
         try:
             result = generate_code_from_task(task)
             write_code_to_file(result)
-            log_entry = deploy_code()
-            append_log(log_entry)
+            deploy_log = deploy()
+            append_log(deploy_log if deploy_log else "[⚠️] Пустой лог деплоя")
         except Exception as e:
             print(f"[❌] Ошибка при обновлении: {e}")
             append_log(f"[❌] Ошибка: {e}")
