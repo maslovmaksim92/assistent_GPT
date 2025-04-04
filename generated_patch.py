@@ -1,39 +1,64 @@
-Ваш запрос немного неясен, так как создание модулей, файлов или ботов в Python зависит от конкретных требований и целей. Однако, я могу показать, как в общем случае можно создавать файлы и модули в Python. Что касается создания бота на GPT-3.5 Turbo, это требует доступа к API OpenAI, и код будет зависеть от конкретных требований к боту.
+Ваш запрос требует несколько шагов для выполнения. Ваш код будет сначала читать файл `tasks_wiki.txt`, анализировать его содержимое, генерировать новые задачи на основе содержимого и добавлять их в конец файла. Затем он будет обновлять `tasks_wiki.txt` на GitHub и на вашем компьютере. 
 
-Создание файла в Python:
-
-```python
-def create_file(filename, content):
-    with open(filename, 'w') as f:
-        f.write(content)
-
-create_file('myfile.txt', 'Hello, world!')
-```
-
-Создание модуля в Python (модуль - это просто другой Python-файл):
+Для начала, давайте напишем код для чтения файла и генерирования новых задач. Предположим, что у нас есть функция `generate_task()`, которая генерирует новую задачу.
 
 ```python
-def create_module(module_name, content):
-    with open(f'{module_name}.py', 'w') as f:
-        f.write(content)
+def read_and_generate_task():
+    with open('tasks_wiki.txt', 'r') as file:
+        content = file.readlines()
 
-create_module('mymodule', 'def hello(): return "Hello, world!"')
+    new_task = generate_task(content)  # предполагаемая функция
+    content.append(new_task)
+
+    with open('tasks_wiki.txt', 'w') as file:
+        file.writelines(content)
 ```
 
-Что касается создания бота на GPT-3.5 Turbo, вам потребуется доступ к API OpenAI. Примерный код может выглядеть так:
+Теперь, чтобы обновить файл на GitHub, вам потребуется использовать GitHub API. Вы можете использовать библиотеку `pyGithub` для этого. Вам потребуется personal access token от вашего аккаунта GitHub.
 
 ```python
-import openai
+from github import Github
 
-openai.api_key = 'your-api-key'
-
-response = openai.Completion.create(
-  engine="text-davinci-002",
-  prompt="Translate the following English text to French: '{}'",
-  max_tokens=60
-)
-
-print(response.choices[0].text.strip())
+def update_github_file():
+    g = Github("<your github token>")
+    repo = g.get_user().get_repo("<your repo name>")
+    file = repo.get_contents("tasks_wiki.txt")
+    repo.update_file("tasks_wiki.txt", "update tasks", "".join(content), file.sha)
 ```
 
-Этот код создает запрос к API OpenAI для перевода текста с английского на французский. Вы бы хотели создать бота, который делает что-то конкретное, вам нужно будет настроить запрос к API, чтобы соответствовать вашим требованиям.
+Комбинируя это вместе, ваш код будет выглядеть примерно так:
+
+```python
+from github import Github
+
+def generate_task(content):
+    # ваш код для генерации новой задачи на основе содержимого
+    pass
+
+def read_and_generate_task():
+    with open('tasks_wiki.txt', 'r') as file:
+        content = file.readlines()
+
+    new_task = generate_task(content)
+    content.append(new_task)
+
+    with open('tasks_wiki.txt', 'w') as file:
+        file.writelines(content)
+
+    return content
+
+def update_github_file(content):
+    g = Github("<your github token>")
+    repo = g.get_user().get_repo("<your repo name>")
+    file = repo.get_contents("tasks_wiki.txt")
+    repo.update_file("tasks_wiki.txt", "update tasks", "".join(content), file.sha)
+
+def main():
+    content = read_and_generate_task()
+    update_github_file(content)
+
+if __name__ == "__main__":
+    main()
+```
+
+Обратите внимание, что вам нужно будет заменить `<your github token>` и `<your repo name>` на ваши собственные значения.
