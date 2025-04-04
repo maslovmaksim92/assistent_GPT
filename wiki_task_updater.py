@@ -1,4 +1,3 @@
-import time
 import os
 from assistent_GPT.code_writer import generate_code_from_task
 from assistent_GPT.deployer import deploy
@@ -37,11 +36,11 @@ def append_log(entry: str):
 
 if __name__ == "__main__":
     print("[🤖] Саморедактирующий цикл начат")
+
     while True:
         task = read_task()
         if not task:
-            print("[🟡] Нет задачи для выполнения. Засыпаю на 10 минут...")
-            time.sleep(600)
+            print("[🟡] Нет задачи для выполнения. Начинаю заново...")
             continue
 
         print("[🧠] Отправляю задачу в GPT...")
@@ -54,5 +53,4 @@ if __name__ == "__main__":
             print(f"[❌] Ошибка при обновлении: {e}")
             append_log(f"[❌] Ошибка: {e}")
 
-        print("[🕒] Сплю 10 минут...\n")
-        time.sleep(600)
+        print("[🔁] Переход к следующему циклу...\n")
